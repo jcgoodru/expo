@@ -30,18 +30,21 @@ class ImageManipulatorModule : Module() {
   private fun createManipulatorContext(url: URL): ImageManipulatorContext {
     val loader = suspend {
       val imageLoader = appContext.imageLoader
-                        ?: throw ImageLoaderNotFoundException()
+        ?: throw ImageLoaderNotFoundException()
 
       suspendCancellableCoroutine { continuation ->
-        imageLoader.loadImageForManipulationFromURL(url.toString(), object : ResultListener {
-          override fun onSuccess(bitmap: Bitmap) {
-            continuation.resume(bitmap)
-          }
+        imageLoader.loadImageForManipulationFromURL(
+          url.toString(),
+          object : ResultListener {
+            override fun onSuccess(bitmap: Bitmap) {
+              continuation.resume(bitmap)
+            }
 
-          override fun onFailure(cause: Throwable?) {
-            continuation.resumeWithException(ImageLoadingFailedException(url.toString(), cause.toCodedException()))
+            override fun onFailure(cause: Throwable?) {
+              continuation.resumeWithException(ImageLoadingFailedException(url.toString(), cause.toCodedException()))
+            }
           }
-        })
+        )
       }
     }
 
